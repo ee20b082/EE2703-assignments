@@ -1,0 +1,83 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{listings}
+
+
+\title{Assignment No 3} % Title
+
+\author{M.Sai kumar} % Author name
+
+\date{18-02-2022} % Date for the report
+\begin{document}		
+		
+\maketitle % Insert the title, author and date
+\section{Extracting data from fitting.dat and analysing and plotting the graph}
+The required data i.e time(t),data of noice are extracted from fitting.dat by using "np.loadtxt". First coloumn corresponds to time and next 9 coloumns correspond to data of signal and noice here the standard deviation is uniformly sampled from a logarithmic scale.
+Below figure shows 9 plots of exact functions with noice and 1 plot of exact function. 
+
+\begin{figure}[!tbh]
+  \centering
+  \includegraphics[scale=0.5]{question-4.png}  
+  \caption{Data to be fitted to theory}
+  \label{fig:fig1}
+\end{figure} 
+
+\section{Plot for errorbar}
+plotting of the first column of data with error bars. Plotting every 5th data item to make the plot readable. If we know standard deviation of our data and if we have the data
+itself, you can plot the error bars with red dots using
+\begin{verbatim}	
+  errorbar(t,data,stdev,fmt="ro")
+\end{verbatim}
+Here, "t" and "data" contain the data, while "stdev" contains $\sigma_n$ for the noise. In order to show every
+fifth data point, you can instead use
+\begin{verbatim}	
+  errorbar(t[::5],data[::5],stdev,fmt="ro")
+\end{verbatim}
+After plotting of functions with noices add plot of exact function in the same graph.
+\begin{figure}[!tbh]
+  \centering
+  \includegraphics[scale=0.5]{question-5.png} 
+  \caption{Data points for 0.10 along with exact function}
+  \label{fig:fig2}
+\end{figure} 
+
+\section{Plot a contour plot}
+Compute below formula and plot $\epsilon_{ij}$ with B values on Y-axis and A values on X-axis.
+\begin{equation}
+  \epsilon_{ij} = \frac{1}{101}\sum_{k=0}^{101}(f_k - g(t_k, A_i, B_j))^2)
+\end{equation}{}
+This is known as the “mean squared error” between the data (fk) and the assumed model. Use the first column of data as fk for this part.
+mean squared error is calculated and stored in $\epsilon_{ij}$
+\begin{figure}[!tbh]
+  \centering
+  \includegraphics[scale=0.5]{question-8.png}  
+  \caption{contour plot of $\epsilon_{ij}$}
+  \label{fig:fig3}
+\end{figure} 
+
+\section{ Plot the error in the estimate of A and B }
+
+\textbf{Python function lstsq from scipy.linalg to obtain the best estimate of A and B.}
+The array you created in part 6 is what you need. This is sent to the least squares program.Repeat this with the different columns (i.e., columns 1 and i). Each column has the same function
+above, with a different amount of noise added as mentioned above. Plot the error in the estimate of A and B for different data files versus the noise $\sigma$
+\begin{figure}[!tbh]
+  \centering
+  \includegraphics[scale=0.5]{question-10.png}  
+  \caption{Variation of error with noise(Error vs $\sigma$)}
+  \label{fig:fig4}
+\end{figure}
+
+\section{ Plot the error in the estimate of A and B using loglog }
+Replot the above curves using loglog.The error estimate in the first plot is non-linear with respect to the noise.On plotting the axes in the log scale, the graph becomes approximately linear.
+\begin{figure}[!tbh]
+  \centering
+  \includegraphics[scale=0.5]{question-11.png}  
+  \caption{Variation of error with noise using loglog(Error vs $\sigma$(logscale))}
+  \label{fig:fig5}
+\end{figure}
+\section{Conclusion}
+Exact function(signal) with noice is extracted from fitting.dat file and calculated error of exact function(signal) using "mean squared error" formula. And best estimate is found out by using "lstsq from scipy.linalg".
+After plotting graphs we can see that error is approximately linear with $\sigma$ in the log scale.
+
+\end{document}

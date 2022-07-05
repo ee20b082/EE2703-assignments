@@ -1,0 +1,152 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{float}
+
+\title{\textbf{Assignment-6}} % Title
+
+\author{\textbf{\textit{M.Sai kumar-EE20B082}}} % Author name
+\date{27-03-2022}% Date for the report
+
+\begin{document}
+
+\maketitle
+
+\section{Overview}
+In this assignment, the focus will be on two powerful capabilities of Python:\\
+1. Symbolic Algebra\\
+2. Analysis of Circuits using Laplace Transforms\\
+With the help of the sympy module, we will analyse some circuit models
+
+\section{Lowpass filter}
+The low pass filter that we use gives the following matrix equation after simplification of the modified nodal equations.
+\[\begin{pmatrix} 0 & 0 & 1 & -\frac{1}{G} \\ -\frac{1}{1+sR_2C_2} & 1 & 0 & 0 \\ 0 & -G & G & 1 \\ -\frac{1}{R_1}-\frac{1}{R_2}-sC_1 & \frac{1}{R_2} & 0 & sC_1 \end{pmatrix}\begin{pmatrix} V_1 \\ V_p \\ V_m \\ V_o \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \\ 0 \\ -V_i(s)/R_1 \end{pmatrix}\]
+
+The python code used is as follows
+\begin{verbatim}
+    def lowpass(R1, R2, C1, C2, G, Vi):
+    s = symbols("s")
+    A = Matrix(
+        [
+            [0, 0, 1, -1 / G],
+            [-1 / (1 + s * R2 * C2), 1, 0, 0],
+            [0, -G, G, 1],
+            [-(1 / R1) - (1 / R2) - (s * C1), 1 / R2, 0, s * C1],
+        ]
+    )
+    b = Matrix([0, 0, 0, -Vi / R1])
+    V = A.inv() * b
+    return (A, b, V)
+\end{verbatim}
+The magnitude and phase bode plots of this filter are shown below.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{1.png}
+\caption{Magnitude and phase bode plot}
+\label{fig:Magnitude and phase plots}
+\end{figure}
+
+
+\section{Step response of lowpass filter}
+An input step is passed into the lowpass filter, the response is calculated. We are plotting the response in both frequency domain and time domain.They are shown below
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{2.png}
+\label{fig:Time domain output of step input}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{3.png}
+\label{fig:Step response of lowpass filter}
+\end{figure}
+
+
+\section{Lowpass filter output for sinusoidal input}
+Let us now analyse what will happen if we pass a sinusoidal signal into a lowpass filter. We will analyse the output by plotting its curve in time domain.\\
+The plot of the input sinusoid is as shown below:
+The output of the lowpass filter when the above sinusoid is passed through it is plotted below:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{4.png}
+\caption{Input sinusoid and output sinusoid}
+\label{fig:Output after passing through lowpass filter}
+\end{figure}
+
+
+\section{Highpass filter}
+The high pass filter is modelled by solving the below matrix equation. This matrix is a direct consequence of the nodal equations of high pass filter.
+\[\begin{pmatrix} 0 & 0 & 1 & -\frac{1}{G} \\ -\frac{-sR_3C_2}{1+sR_3C_2} & 1 & 0 & 0 \\ 0 & -G & G & 1 \\ -1-(sR_1C_1)-(sR_3C_2)) & sC_2R_1 & 0 & 1 \end{pmatrix}\begin{pmatrix} V_1 \\ V_p \\ V_m \\ V_o \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \\ 0 \\ -V_i(s)sR_1C_1 \end{pmatrix}\]
+
+The python code snippet that declares the high pass function and solves the matrix equation to get the V matrix is as shown below:
+\begin{verbatim}
+    def highpass(R1, R3, C1, C2, G, Vi):
+    s = symbols("s")
+    A = Matrix(
+        [
+            [0, 0, 1, -1 / G],
+            [-(s * R3 * C2) / (1 + s * R3 * C2), 1, 0, 0],
+            [0, -G, G, 1],
+            [-(s * C1) - (s * C2) - (1 / R1), s * C2, 0, 1 / R1],
+        ]
+    )
+    b = Matrix([0, 0, 0, -Vi * s * C1])
+    V = A.inv() * b
+    return (A, b, V)
+\end{verbatim}
+The magnitude and phase bode plots of this filter are as shown below:
+\begin{figure}[H]
+\includegraphics[scale=0.6]{5.png}
+\centering
+\caption{Magnitude and phase bode plot}
+\label{fig:Coupled Oscillations}
+\end{figure}
+
+
+
+\section{Step response of highpass filter}
+An input step is passed into the highpass filter, the response is calculated. We are plotting the response in both frequency domain and time domain.They are shown below
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{6.png}
+\caption{Time domain output of step input}
+\label{fig:Time domain output of step input}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{7.png}
+\caption{Step response of lowpass filter}
+\label{fig:Step response of lowpass filter}
+\end{figure}
+
+
+\section{Highpass filter output for sinusoidal input}
+Let us now analyse what will happen if we pass a sinusoidal signal into a high filter. We will analyse the output by plotting its curve in time domain.\\
+
+
+
+
+The output of the highpass filter when the sinusoid is passed through it is plotted below:
+
+\begin{figure}[H]
+\includegraphics[scale=0.6]{8.png}
+\centering
+\caption{Highpass filter output for given input}
+\label{fig:Coupled Oscillations}
+\end{figure}
+
+
+\section{Highpass filter output for a decaying sinusoid}
+We wish to analyse the output of the highpass filter when we pass a signal which is a decaying sinusoid. We will analyse the behaviour of this highpass filter for different frequencies of the input decaying sinusoid. Let us consider the below sinusoid and pass it into the highpass filter.I took frequency as 10000 and decay constant as -5.
+\begin{figure}[H]
+\includegraphics[scale=0.6]{9.png}
+\centering
+\caption{output for decaying sinusoid}
+\label{fig:Coupled Oscillations}
+\end{figure}
+\end{document}

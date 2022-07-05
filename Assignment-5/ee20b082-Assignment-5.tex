@@ -1,0 +1,164 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{listings}
+
+
+\title{\textbf{Assignment-4}} % Title
+
+\author{\textbf{\textit{M.Sai kumar-EE20B082}}} % Author name
+
+\date{18-02-2022} % Date for the report
+
+\begin{document}
+
+\maketitle % Insert the title, author and date
+\section{Plotting counter plot.}
+Plot a contour plot of the potential in Figure 1. Mark the V = 1 region by marking those nodes red.I took radius as 8 units.
+A cylindrical wire is soldered to the middle of a copper plate and its voltage is held at 1 Volt. One side of the plate is grounded, while the remaining are floating. The plate is 25 cm by 25 cm in size.
+\begin{figure}[!tbh]
+  \centering
+  \includegraphics[scale=0.5]{fig1.png} 
+  \caption{contour plot of the potential} 
+  \label{fig:f1}
+\end{figure} 
+
+\pagebreak
+\newpage
+\section{Plot of error vs iterations.}
+	\subsection{Updating the potential}
+	The potential at any point should be the average of its neighbours.The solution process is obvious. Guess anything you like for the solution. At each point, replace
+    the potential by the average of its neighbours. Keep iterating till the solution converges (i.e., the maximum change in elements of  $phi$  is less than some tolerance
+	\begin{equation}
+	\phi_{i, j} = \frac{\phi_{i-1, j} + \phi_{i, j-1} + \phi_{i+1, j} + \phi_{i, j+1}}{4}
+	\end{equation}
+
+    \begin{verbatim}
+        updating phi matrix
+        phi[1:-1,1:-1]=0.25*(phiold[1:-1,0:-2]+ phiold[1:-1,2:]+ phiold[0:-2,1:-1] + phiold[2:,1:-1])
+    \end{verbatim}
+
+    At boundaries where the electrode is present, just put the value of electrode potential itself. At boundaries where there is no electrode, the gradient of $phi$ should be tangential. This is implemented by requiring that  $phi$ 
+    should not vary in the normal direction.
+ 	\subsection{Enforcing Boundary Conditions}
+	The bottom boundary is grounded. The other 3 boundaries have a normal potential difference zero.
+	\begin{verbatim}
+	def boundary(phi,mask = np.where(X**2+Y**2<(0.35)**2)):
+    #Left
+    phi[:,0]=phi[:,1]
+    #Right
+    phi[:,Nx-1]=phi[:,Nx-2] 
+    #Top 
+    phi[0,:]=phi[1,:] 
+    #Bottom
+    phi[Ny-1,:]=0
+    #wire
+    phi[mask]=1.0
+    return phi
+	\end{verbatim}
+	\subsection{Calculating error after each iteration}
+	\begin{verbatim}
+	err = np.zeros(Niter)
+for k in range(Niter):
+    phiold = phi.copy()
+    phi = update_phi(phi,phiold)
+    phi = boundary(phi)
+    err[k] = np.max(np.abs(phi-phiold))
+	\end{verbatim}
+    \begin{figure}[!tbh]
+        \centering
+        \includegraphics[scale=0.5]{fig2.png}  % Mention the image name within the curly braces. Image should be in the same folder as the tex file. 
+        \caption{semilog plot of errors.}
+        \label{fig:f2}
+    \end{figure} 
+    \begin{figure}[!tbh]
+        \centering
+        \includegraphics[scale=0.5]{fig3.png}  % Mention the image name within the curly braces. Image should be in the same folder as the tex file. 
+        \caption{loglog plot of errors.}
+        \label{fig:f3}
+    \end{figure} 
+
+    \section{Plot of error and fit1, fit2}
+    The error is a decaying potential for higher iterations.So we try to get a approximated function for given error.
+    \begin{equation}
+    y = Ae^{Bx}
+    \end{equation}
+
+    We can estimate best log(A) and B with the least squares method.
+    \begin{equation}
+    log(y) = log(A) + Bx
+    \end{equation}
+    
+    Then we need to plot fitl for 0 to 500 iterations, Then fit2 from 500 iterations to end. And we need to plot error plot along with this plots.
+    We can see that there is very less difference between the plots.
+    \begin{figure}[!tbh]
+           \centering
+           \includegraphics[scale=0.5]{fig4.png}  % Mention the image name within the curly braces. Image should be in the same folder as the tex file. 
+           \caption{Best fit of error on semilog}
+           \label{fig:f4}
+       \end{figure} 
+       \begin{figure}[!tbh]
+        \centering
+        \includegraphics[scale=0.5]{fig5.png}  % Mention the image name within the curly braces. Image should be in the same folder as the tex file. 
+        \caption{Best fit of error on semilog(every 50th iteration)}
+        \label{fig:f5}
+    \end{figure} 
+
+\section{Plotting maximum error}
+The profile was changing very little every iteration, but it was continuously changing. So the cumulative error was still large.
+This method of solving Laplace's Equation is known to be one of the worst available. This is because of the very slow coefficient with which the error reduces.
+
+\begin{equation}
+    = -A*exp(B(N +0.5))/B
+\end{equation}
+
+\begin{figure}[!tbh]
+   	\centering
+   	\includegraphics[scale=0.5]{fig6.png}  % Mention the image name within the curly braces. Image should be in the same folder as the tex file. 
+   	\caption{Cumulative error values on a log log scale}
+   	\label{fig:f6}
+   \end{figure}
+\section{3D plot of potential}
+\begin{verbatim}
+fig1=figure(4) # open a new figure
+ax=p3.Axes3D(fig4) # Axes3D is the means to do a surface plot
+title('The 3-D surface plot of the potential')
+surf = ax.plot_surface(Y, X, phi.T, rstride=1, cstride=1, cmap=cm.jet,l
+\end{verbatim}
+\begin{figure}[!tbh]
+    \centering
+    \includegraphics[scale=0.5]{fig7.png}  % Mention the image name within the curly braces. Image should be in the same folder as the tex file. 
+    \caption{3D plot of potential.}
+    \label{fig:f7}
+\end{figure}
+
+\section{Plotting counter plot.}
+\begin{figure}[!tbh]
+  \centering
+  \includegraphics[scale=0.5]{fig8.png} 
+  \caption{contour plot of the potential} 
+  \label{fig:f8}
+\end{figure} 
+
+
+\section{Calculatoin and direction of current}
+obtain the currents requires computing the gradient. The actual value of $sigma$ does not matter to
+the shape of the current profile, so we set it to unity. Then we get following equations if we assume some approximations for gradient.
+\begin{equation}
+J_{x, ij} = \frac{\phi_{i, j-1} - \phi{i, j+1}} {2}
+\end{equation}
+\begin{equation}
+J_{y, ij} = \frac{\phi_{i-1, j} - \phi{i+1, j}} {2}
+\end{equation}
+Create the arrays Jx, Jy. Then call the quiver command.
+\begin{verbatim}
+    quiver(y,x,Jy[::-1,:],Jx[::-1,:])
+    \end{verbatim}
+\begin{figure}[!tbh]
+   	\centering
+   	\includegraphics[scale=0.5]{fig9.png}  % Mention the image name within the curly braces. Image should be in the same folder as the tex file. 
+   	\caption{The vector plot of the current flow}
+   	\label{fig:f9}
+   \end{figure}
+\end{document}
+
